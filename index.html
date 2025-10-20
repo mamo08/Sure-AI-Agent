@@ -1,0 +1,452 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Sure AI Agents — Mockup Funcional</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root{
+      --bg1:#0f0f23; --bg2:#121229; --accent1:#667eea; --accent2:#764ba2; --muted:rgba(255,255,255,0.7);
+      --card: rgba(255,255,255,0.03);
+      --glass: rgba(255,255,255,0.04);
+    }
+    *{box-sizing:border-box}
+    body{font-family:Inter,system-ui,Arial; margin:0; background:linear-gradient(135deg,var(--bg1),var(--bg2)); color:#fff}
+    .wrap{display:flex; min-height:100vh}
+    .sidebar{width:300px; padding:28px; background:rgba(12,12,30,0.95); border-right:1px solid rgba(255,255,255,0.04); position:relative}
+    .logo{font-weight:800; font-size:20px; background:linear-gradient(90deg,var(--accent1),var(--accent2)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; display:flex; align-items:center; gap:10px}
+    .logo::before{content:'🤖'; font-size:24px}
+    .nav{margin-top:20px; display:flex; flex-direction:column; gap:6px}
+    .nav button{background:transparent; border:0; color:var(--muted); text-align:left; padding:12px; border-radius:10px; cursor:pointer; font-weight:600}
+    .nav button.active{background:linear-gradient(90deg,var(--accent1),var(--accent2)); color:#fff; box-shadow:0 8px 28px rgba(102,126,234,0.12)}
+    .userbox{position:absolute; bottom:24px; left:28px; right:28px}
+    .main{flex:1; padding:28px}
+    .header{display:flex; justify-content:space-between; align-items:center}
+    .search{width:420px}
+    .search input{width:100%; padding:12px 16px; border-radius:10px; border:1px solid rgba(255,255,255,0.06); background:var(--glass); color:#fff}
+    .grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:16px; margin-top:20px}
+    .card{background:var(--card); padding:18px; border-radius:12px; border:1px solid rgba(255,255,255,0.03)}
+    .stat{font-size:28px; font-weight:800; background:linear-gradient(90deg,var(--accent1),var(--accent2)); -webkit-background-clip:text; -webkit-text-fill-color:transparent}
+    .table{width:100%; border-collapse:collapse}
+    table th, table td{padding:12px; text-align:left; border-top:1px solid rgba(255,255,255,0.03)}
+    th{font-size:12px; text-transform:uppercase; opacity:0.7}
+    .badge{display:inline-block;padding:6px 10px;border-radius:999px;font-weight:700;font-size:12px}
+    .badge.vig{background:rgba(46,213,115,0.12); color:#2ed573}
+    .badge.pen{background:rgba(255,168,1,0.12); color:#ffa801}
+    .badge.exp{background:rgba(255,71,87,0.12); color:#ff4757}
+    .fab{position:fixed; right:36px; bottom:36px; width:62px; height:62px; border-radius:999px; display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:28px; background:linear-gradient(90deg,var(--accent1),var(--accent2)); box-shadow:0 14px 40px rgba(118,75,162,0.18)}
+    .hidden{display:none}
+    /* modal */
+    .modal-back{position:fixed; inset:0; background:rgba(0,0,0,0.5); display:flex; align-items:center; justify-content:center}
+    .modal{background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02)); padding:18px; border-radius:12px; width:680px; border:1px solid rgba(255,255,255,0.04)}
+    .form-row{display:flex; gap:10px; margin-bottom:10px}
+    .form-row input, .form-row select{flex:1; padding:10px; border-radius:8px; border:1px solid rgba(255,255,255,0.06); background:transparent; color:#fff}
+    /* responsive */
+    @media (max-width:880px){.sidebar{display:none}.main{padding:16px}.search{width:100%}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <aside class="sidebar">
+      <div class="logo">Sure AI Agents</div>
+      <nav class="nav" role="navigation" aria-label="Navegación principal">
+        <button class="active" data-view="dashboard">📊 Dashboard</button>
+        <button data-view="clientes">👥 Clientes</button>
+        <button data-view="polizas">📋 Pólizas</button>
+        <button data-view="siniestros">⚠️ Siniestros</button>
+        <button data-view="cartera">💼 Cartera</button>
+        <button data-view="informes">📈 Informes</button>
+        <button data-view="analisis">🔍 Análisis IA</button>
+      </nav>
+
+      <div class="userbox">
+        <div style="display:flex;gap:12px;align-items:center">
+          <div style="width:44px;height:44px;border-radius:50%;background:linear-gradient(90deg,var(--accent1),var(--accent2));display:flex;align-items:center;justify-content:center;font-weight:800">CF</div>
+          <div>
+            <div style="font-weight:700">Carlos Carmona</div>
+            <div style="font-size:13px;opacity:0.7">Intermediario • Sure Approach Co.</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <main class="main" id="main">
+      <!-- header -->
+      <div class="header">
+        <div>
+          <h1 style="margin:0;font-size:22px">Panel de Control</h1>
+          <small style="opacity:0.7">Bienvenido, Carlos — Demo funcional con datos de prueba</small>
+        </div>
+        <div class="search" role="search">
+          <input id="q" placeholder="Buscar clientes, pólizas, siniestros..." aria-label="Buscar" />
+        </div>
+      </div>
+
+      <!-- VISTAS -->
+      <section id="view-dashboard" class="view">
+        <div class="grid">
+          <div class="card">
+            <div style="opacity:0.7; font-size:12px">Clientes Activos</div>
+            <div class="stat" id="stat-clientes">--</div>
+            <div style="opacity:0.8; font-size:12px">Último mes: <span id="stat-clientes-pct">--</span></div>
+          </div>
+          <div class="card">
+            <div style="opacity:0.7; font-size:12px">Pólizas Vigentes</div>
+            <div class="stat" id="stat-polizas">--</div>
+            <div style="opacity:0.8; font-size:12px">Cancelaciones: <span id="stat-polizas-cancel">--</span></div>
+          </div>
+          <div class="card">
+            <div style="opacity:0.7; font-size:12px">Primas Mensuales</div>
+            <div class="stat" id="stat-primas">--</div>
+            <div style="opacity:0.8; font-size:12px">Ticket promedio: <span id="stat-ticket">--</span></div>
+          </div>
+          <div class="card">
+            <div style="opacity:0.7; font-size:12px">Tasa de Renovación</div>
+            <div class="stat" id="stat-renov">--</div>
+            <div style="opacity:0.8; font-size:12px">Meta: 92%</div>
+          </div>
+        </div>
+
+        <div style="display:flex;gap:16px;margin-top:18px;align-items:flex-start">
+          <div class="card" style="flex:1;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+              <strong>Rendimiento mensual</strong>
+              <div>
+                <button class="mini" data-range="mes">Mes</button>
+                <button class="mini" data-range="trim">Trimestre</button>
+              </div>
+            </div>
+            <canvas id="chart-sales" height="140"></canvas>
+          </div>
+
+          <div class="card" style="width:420px;">
+            <strong>Top 5 Aseguradoras — primas</strong>
+            <canvas id="chart-pie" height="220"></canvas>
+          </div>
+        </div>
+
+        <div style="margin-top:18px" class="card">
+          <strong>Últimas pólizas</strong>
+          <div style="overflow:auto; margin-top:10px">
+            <table class="table" id="table-recent">
+              <thead><tr><th>Cliente</th><th>Póliza</th><th>Aseguradora</th><th>Venc.</th><th>Prima</th><th>Estado</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section id="view-clientes" class="view hidden">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+          <strong>Clientes</strong>
+          <div>
+            <button onclick="seedDemo()">Cargar demo</button>
+            <button onclick="openModal('cliente')">+ Nuevo cliente</button>
+          </div>
+        </div>
+        <div class="card">
+          <table class="table" id="table-clientes">
+            <thead><tr><th>Nombre</th><th>CC</th><th>Teléfono</th><th>Correo</th><th>Acciones</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="view-polizas" class="view hidden">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+          <strong>Pólizas</strong>
+          <div>
+            <button onclick="openModal('poliza')">+ Nueva póliza</button>
+          </div>
+        </div>
+        <div class="card">
+          <table class="table" id="table-polizas">
+            <thead><tr><th>#</th><th>Cliente</th><th>Ramo</th><th>Aseguradora</th><th>Vencimiento</th><th>Prima</th><th>Estado</th><th>Acciones</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="view-siniestros" class="view hidden">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+          <strong>Siniestros</strong>
+          <div>
+            <button onclick="openModal('siniestro')">+ Reportar</button>
+          </div>
+        </div>
+        <div class="card">
+          <table class="table" id="table-siniestros">
+            <thead><tr><th>ID</th><th>Cliente</th><th>Fecha</th><th>Tipo</th><th>Estado</th><th>Monto</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="view-cartera" class="view hidden">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+          <strong>Cartera</strong>
+          <div>
+            <button onclick="generarCSV('cartera')">Exportar CSV</button>
+          </div>
+        </div>
+        <div class="card">
+          <table class="table" id="table-cartera">
+            <thead><tr><th>Cliente</th><th>Factura</th><th>Vencimiento</th><th>Valor</th><th>Estado</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="view-informes" class="view hidden">
+        <div class="card">
+          <strong>Generador de Informes</strong>
+          <p style="opacity:0.75">Selecciona un tipo de informe rápido</p>
+          <div style="display:flex;gap:10px;margin-top:10px">
+            <button onclick="downloadInforme('ventas')">Reporte de Ventas</button>
+            <button onclick="downloadInforme('renovaciones')">Reporte de Renovaciones</button>
+            <button onclick="downloadInforme('cartera')">Reporte de Cartera</button>
+          </div>
+        </div>
+      </section>
+
+      <section id="view-analisis" class="view hidden">
+        <div class="card">
+          <strong>Análisis IA — Simulación</strong>
+          <p style="opacity:0.8">Modelo simple de riesgo: la demo sugiere clientes con probabilidad de cancelar > 60%</p>
+          <div style="display:flex;gap:12px;margin-top:12px;align-items:center">
+            <button onclick="runRiskAnalysis()">Ejecutar análisis</button>
+            <div id="analysis-result" style="opacity:0.85"></div>
+          </div>
+        </div>
+        <div class="card" style="margin-top:12px">
+          <strong>Gráfico predicción cancelaciones (demo)</strong>
+          <canvas id="chart-pred" height="120"></canvas>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <div class="fab" title="Asistente IA" onclick="toggleAI()">🤖</div>
+
+  <!-- Modal general -->
+  <div id="modal" class="hidden" role="dialog" aria-modal="true">
+    <div class="modal-back" onclick="closeModal(event)">
+      <div class="modal" onclick="event.stopPropagation()">
+        <div id="modal-title" style="font-weight:700;margin-bottom:10px">Nuevo</div>
+        <div id="modal-body">
+          <!-- Forms se inyectan desde JS -->
+        </div>
+        <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:12px">
+          <button onclick="saveModal()">Guardar</button>
+          <button onclick="closeModal()">Cancelar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Asistente simple -->
+  <div id="assistant" class="hidden" style="position:fixed; right:36px; bottom:110px; width:320px; background:rgba(12,12,30,0.98); border:1px solid rgba(118,75,162,0.16); padding:14px; border-radius:12px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+      <strong>Asistente IA (demo)</strong>
+      <button onclick="toggleAI()">×</button>
+    </div>
+    <div id="assistant-body" style="font-size:13px;opacity:0.9;min-height:80px">
+      Hola — prueba acciones rápidas: <br>
+      • <button onclick="downloadInforme('renovaciones')">Informe renovaciones</button>
+      • <button onclick="runRiskAnalysis()">Analizar riesgo</button>
+    </div>
+  </div>
+
+  <script>
+    /***********************
+     * Mock data & storage
+     ***********************/
+    const STORAGE_KEY = 'sure_mock_v1';
+    const defaultState = {
+      clientes: [
+        {id:1,nombre:'María González',cc:'80012345',tel:'3001234567',email:'maria@example.com'},
+        {id:2,nombre:'Juan Pérez',cc:'90098765',tel:'3109876543',email:'juan@example.com'}
+      ],
+      polizas: [
+        {id:1,clienteId:1,ramo:'Auto',aseg:'SURA',venc:'2025-11-15',prima:1250000,estado:'Vigente'},
+        {id:2,clienteId:2,ramo:'Hogar',aseg:'Allianz',venc:'2025-10-28',prima:890000,estado:'Por Renovar'}
+      ],
+      siniestros: [
+        {id:1,clienteId:1,fecha:'2025-07-10',tipo:'Choque',estado:'Procesando',monto:2500000}
+      ],
+      cartera: [
+        {id:1,cliente:'María González',factura:'F-2025-001',venc:'2025-10-10',valor:1250000,estado:'Pagado'},
+        {id:2,cliente:'Juan Pérez',factura:'F-2025-002',venc:'2025-10-28',valor:890000,estado:'Pendiente'}
+      ]
+    };
+
+    function loadState(){
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if(!raw) { localStorage.setItem(STORAGE_KEY, JSON.stringify(defaultState)); return structuredClone(defaultState); }
+      try{ return JSON.parse(raw);}catch(e){ localStorage.setItem(STORAGE_KEY, JSON.stringify(defaultState)); return structuredClone(defaultState);}    }
+    function saveState(s){ localStorage.setItem(STORAGE_KEY, JSON.stringify(s)); }
+    let state = loadState();
+
+    /***********************
+     * Chart variables (declared early to avoid TDZ errors)
+     ***********************/
+    let chartSales = null;
+    let chartPie = null;
+    let chartPred = null;
+
+    /***********************
+     * UI wiring
+     ***********************/
+    const navBtns = document.querySelectorAll('.nav button');
+    navBtns.forEach(b=>b.addEventListener('click', ()=>{ navBtns.forEach(x=>x.classList.remove('active')); b.classList.add('active'); showView(b.dataset.view); }));
+    function showView(v){ document.querySelectorAll('.view').forEach(s=>s.classList.add('hidden')); const el = document.getElementById('view-'+v); if(el) el.classList.remove('hidden'); render(); }
+    showView('dashboard');
+
+    document.getElementById('q').addEventListener('input',(e)=>{ const q=e.target.value.toLowerCase(); filterTables(q); });
+
+    function filterTables(q){ if(!q){ render(); return;} // very simple filtering for clients and policies
+      const cbody = document.querySelector('#table-clientes tbody'); if(cbody){ cbody.innerHTML=''; const res = state.clientes.filter(c=> (c.nombre+c.cc+c.email).toLowerCase().includes(q)); res.forEach(c=>{ const tr=document.createElement('tr'); tr.innerHTML=`<td>${c.nombre}</td><td>${c.cc}</td><td>${c.tel}</td><td>${c.email}</td><td><button onclick="editCliente(${c.id})">Editar</button></td>`; cbody.appendChild(tr); }); }
+      const pbody = document.querySelector('#table-polizas tbody'); if(pbody){ pbody.innerHTML=''; const res2 = state.polizas.filter(p=> (p.ramo+p.aseg).toLowerCase().includes(q) || getClienteName(p.clienteId).toLowerCase().includes(q)); res2.forEach(p=>{ const tr=document.createElement('tr'); tr.innerHTML=`<td>${p.id}</td><td>${getClienteName(p.clienteId)}</td><td>${p.ramo}</td><td>${p.aseg}</td><td>${p.venc}</td><td>${formatMoney(p.prima)}</td><td>${p.estado}</td><td><button onclick="editPoliza(${p.id})">Editar</button></td>`; pbody.appendChild(tr); }); }
+    }
+
+    /***********************
+     * Render functions
+     ***********************/
+    function render(){ renderStats(); renderRecent(); renderClientes(); renderPolizas(); renderSiniestros(); renderCartera(); }
+
+    function renderStats(){
+      document.getElementById('stat-clientes').textContent = state.clientes.length;
+      document.getElementById('stat-clientes-pct').textContent = '+12%';
+      document.getElementById('stat-polizas').textContent = state.polizas.length;
+      document.getElementById('stat-polizas-cancel').textContent = '1%';
+      const totalPrimas = state.polizas.reduce((s,p)=>s + (p.prima||0),0);
+      document.getElementById('stat-primas').textContent = formatMoney(totalPrimas);
+      document.getElementById('stat-ticket').textContent = state.polizas.length?formatMoney(Math.round(totalPrimas/state.polizas.length)):"--";
+      document.getElementById('stat-renov').textContent = '94.2%';
+      renderCharts();
+    }
+
+    function renderRecent(){ const tbody=document.querySelector('#table-recent tbody'); tbody.innerHTML=''; state.polizas.slice(-6).reverse().forEach(p=>{ const tr=document.createElement('tr'); tr.innerHTML = `<td>${getClienteName(p.clienteId)}</td><td>${p.ramo}</td><td>${p.aseg}</td><td>${p.venc}</td><td>${formatMoney(p.prima)}</td><td>${renderBadge(p.estado)}</td>`; tbody.appendChild(tr); }); }
+
+    function renderClientes(){ const tbody=document.querySelector('#table-clientes tbody'); if(!tbody) return; tbody.innerHTML=''; state.clientes.forEach(c=>{ const tr=document.createElement('tr'); tr.innerHTML=`<td>${c.nombre}</td><td>${c.cc}</td><td>${c.tel}</td><td>${c.email}</td><td><button onclick="editCliente(${c.id})">Editar</button> <button onclick="removeCliente(${c.id})">Eliminar</button></td>`; tbody.appendChild(tr); }); }
+
+    function renderPolizas(){ const tbody=document.querySelector('#table-polizas tbody'); if(!tbody) return; tbody.innerHTML=''; state.polizas.forEach(p=>{ const tr=document.createElement('tr'); tr.innerHTML=`<td>${p.id}</td><td>${getClienteName(p.clienteId)}</td><td>${p.ramo}</td><td>${p.aseg}</td><td>${p.venc}</td><td>${formatMoney(p.prima)}</td><td>${renderBadge(p.estado)}</td><td><button onclick="editPoliza(${p.id})">Editar</button></td>`; tbody.appendChild(tr); }); }
+
+    function renderSiniestros(){ const tbody=document.querySelector('#table-siniestros tbody'); if(!tbody) return; tbody.innerHTML=''; state.siniestros.forEach(s=>{ const tr=document.createElement('tr'); tr.innerHTML=`<td>${s.id}</td><td>${getClienteName(s.clienteId)}</td><td>${s.fecha}</td><td>${s.tipo}</td><td>${s.estado}</td><td>${formatMoney(s.monto)}</td>`; tbody.appendChild(tr); }); }
+
+    function renderCartera(){ const tbody=document.querySelector('#table-cartera tbody'); if(!tbody) return; tbody.innerHTML=''; state.cartera.forEach(c=>{ const tr=document.createElement('tr'); tr.innerHTML=`<td>${c.cliente}</td><td>${c.factura}</td><td>${c.venc}</td><td>${formatMoney(c.valor)}</td><td>${c.estado}</td>`; tbody.appendChild(tr); }); }
+
+    function renderBadge(estado){ if(!estado) return ''; if(estado.toLowerCase().includes('vig')) return '<span class="badge vig">Vigente</span>'; if(estado.toLowerCase().includes('renov')||estado.toLowerCase().includes('por')) return '<span class="badge pen">Por Renovar</span>'; if(estado.toLowerCase().includes('venc')) return '<span class="badge exp">Vencida</span>'; return '<span class="badge">'+estado+'</span>'; }
+
+    function getClienteName(id){ const c = state.clientes.find(x=>x.id==id); return c?c.nombre:'(sin cliente)'; }
+    function formatMoney(v){ if(!v && v!==0) return '-'; return '$'+Number(v).toLocaleString('es-CO'); }
+
+    /***********************
+     * Charts (Chart.js)
+     ***********************/
+    function renderCharts(){
+      // Create/destroy charts safely — check that canvas elements exist
+      try{
+        const salesEl = document.getElementById('chart-sales');
+        if(salesEl){ const ctx = salesEl.getContext('2d'); const months = ['Jun','Jul','Ago','Sep','Oct','Nov']; const ventas = months.map((m,i)=> Math.round( (state.polizas.length * 100000) * (0.6 + Math.random()*0.8) )); if(chartSales){ try{ chartSales.destroy(); }catch(e){} } chartSales = new Chart(ctx, {type:'line', data:{labels:months, datasets:[{label:'Primas (COP)',data:ventas,fill:true, tension:0.4}]}, options:{plugins:{legend:{display:false}}}}); }
+
+        const pieEl = document.getElementById('chart-pie');
+        if(pieEl){ const ctx2 = pieEl.getContext('2d'); const aseguradoras = groupBy(state.polizas, p=>p.aseg); const labels = Object.keys(aseguradoras); const data = labels.map(l=> asegCount(l)); if(chartPie){ try{ chartPie.destroy(); }catch(e){} } chartPie = new Chart(ctx2, {type:'doughnut', data:{labels, datasets:[{data}]}, options:{plugins:{legend:{position:'bottom'}}}}); }
+
+        const predEl = document.getElementById('chart-pred');
+        if(predEl){ const ctx3 = predEl.getContext('2d'); const x = [0,1,2,3,4,5]; const y = x.map(i=> Math.round( (state.polizas.length*0.02) * (1 + Math.random()*1.5) )); if(chartPred){ try{ chartPred.destroy(); }catch(e){} } chartPred = new Chart(ctx3,{type:'bar', data:{labels:x.map(i=>'W+'+i), datasets:[{label:'Predicción cancelaciones', data:y}]}, options:{plugins:{legend:{display:false}}}}); }
+      }catch(err){ console.error('Error al renderizar gráficos:', err); }
+    }
+
+    function groupBy(arr,fn){ const o={}; arr.forEach(i=>{ const k=fn(i); o[k]=o[k]||[]; o[k].push(i); }); return o; }
+    function asegCount(name){ return state.polizas.filter(p=>p.aseg==name).reduce((s,p)=>s + (p.prima||0),0) }
+
+    /***********************
+     * Modal: crear/editar
+     ***********************/
+    let modalType=null, modalId=null;
+    function openModal(type,id=null){ modalType=type; modalId = id; const modal = document.getElementById('modal'); modal.classList.remove('hidden'); document.getElementById('modal-title').textContent = (id? 'Editar ':'Nuevo ') + (type=='cliente'?'Cliente': type=='poliza' ? 'Póliza' : type=='siniestro' ? 'Siniestro' : 'Elemento');
+      const body = document.getElementById('modal-body'); body.innerHTML='';
+      if(type=='cliente'){ const c = id? state.clientes.find(x=>x.id==id) : {nombre:'',cc:'',tel:'',email:''}; body.innerHTML = `
+        <div class="form-row"><input id="f-nombre" placeholder="Nombre" value="${c.nombre||''}" /></div>
+        <div class="form-row"><input id="f-cc" placeholder="Cédula" value="${c.cc||''}" /><input id="f-tel" placeholder="Teléfono" value="${c.tel||''}" /></div>
+        <div class="form-row"><input id="f-email" placeholder="Correo" value="${c.email||''}" /></div>
+      `; }
+      if(type=='poliza'){ const p = id? state.polizas.find(x=>x.id==id) : {clienteId:'',ramo:'Auto',aseg:'SURA',venc:'2025-12-31',prima:0,estado:'Vigente'}; body.innerHTML = `
+        <div class="form-row"><select id="f-cliente">${state.clientes.map(c=>`<option value="${c.id}" ${p.clienteId==c.id?'selected':''}>${c.nombre}</option>`).join('')}</select><input id="f-ramo" placeholder="Ramo" value="${p.ramo||''}" /></div>
+        <div class="form-row"><input id="f-aseg" placeholder="Aseguradora" value="${p.aseg||''}" /><input id="f-venc" type="date" value="${p.venc||''}" /></div>
+        <div class="form-row"><input id="f-prima" type="number" placeholder="Prima" value="${p.prima||0}" /><select id="f-estado"><option ${p.estado=='Vigente'?'selected':''}>Vigente</option><option ${p.estado=='Por Renovar'?'selected':''}>Por Renovar</option><option ${p.estado=='Vencida'?'selected':''}>Vencida</option></select></div>
+      `; }
+      if(type=='siniestro'){ const s = id? state.siniestros.find(x=>x.id==id): {clienteId:'',fecha:'2025-01-01',tipo:'',estado:'',monto:0}; body.innerHTML = `
+        <div class="form-row"><select id="f-cliente">${state.clientes.map(c=>`<option value="${c.id}" ${s.clienteId==c.id?'selected':''}>${c.nombre}</option>`).join('')}</select><input id="f-fecha" type="date" value="${s.fecha||''}" /></div>
+        <div class="form-row"><input id="f-tipo" placeholder="Tipo" value="${s.tipo||''}" /><input id="f-monto" type="number" value="${s.monto||0}" /></div>
+      `; }
+    }
+    function closeModal(e){ document.getElementById('modal').classList.add('hidden'); modalType=null; modalId=null; }
+    function closeModalEvent(){ closeModal(); }
+    function closeModalClick(e){ if(e.target.classList.contains('modal-back')) closeModal(); }
+
+    function saveModal(){ if(!modalType) return; if(modalType=='cliente'){ const nombre=document.getElementById('f-nombre').value; const cc=document.getElementById('f-cc').value; const tel=document.getElementById('f-tel').value; const email=document.getElementById('f-email').value; if(modalId){ const idx=state.clientes.findIndex(c=>c.id==modalId); state.clientes[idx]= {...state.clientes[idx], nombre, cc, tel, email}; } else { const id = Date.now(); state.clientes.push({id,nombre,cc,tel,email}); }
+        saveState(state); closeModal(); render(); return; }
+      if(modalType=='poliza'){ const clienteId=Number(document.getElementById('f-cliente').value); const ramo=document.getElementById('f-ramo').value; const aseg=document.getElementById('f-aseg').value; const venc=document.getElementById('f-venc').value; const prima=Number(document.getElementById('f-prima').value); const estado=document.getElementById('f-estado').value; if(modalId){ const idx=state.polizas.findIndex(p=>p.id==modalId); state.polizas[idx]= {...state.polizas[idx], clienteId, ramo, aseg, venc, prima, estado}; } else { const id=Date.now(); state.polizas.push({id,clienteId,ramo,aseg,venc,prima,estado}); }
+        saveState(state); closeModal(); render(); return; }
+      if(modalType=='siniestro'){ const clienteId=Number(document.getElementById('f-cliente').value); const fecha=document.getElementById('f-fecha').value; const tipo=document.getElementById('f-tipo').value; const monto=Number(document.getElementById('f-monto').value); if(modalId){ const idx=state.siniestros.findIndex(s=>s.id==modalId); state.siniestros[idx]= {...state.siniestros[idx], clienteId, fecha, tipo, monto}; } else { const id=Date.now(); state.siniestros.push({id,clienteId,fecha,tipo,estado:'Reportado',monto}); }
+        saveState(state); closeModal(); render(); return; }
+    }
+
+    function editCliente(id){ openModal('cliente', id); }
+    function removeCliente(id){ if(!confirm('Eliminar cliente?')) return; state.clientes = state.clientes.filter(c=>c.id!=id); // also remove policies
+      state.polizas = state.polizas.filter(p=>p.clienteId!=id); saveState(state); render(); }
+    function editPoliza(id){ openModal('poliza', id); }
+
+    /***********************
+     * Informes / export
+     ***********************/
+    function generarCSV(type){ let rows=[]; if(type=='cartera'){ rows = [['Cliente','Factura','Vencimiento','Valor','Estado'], ...state.cartera.map(r=>[r.cliente,r.factura,r.venc,r.valor,r.estado])]; }
+      const csv = rows.map(r=> r.map(c=> '"'+String(c).replace(/"/g,'""')+'"').join(',')).join('\n'); const blob=new Blob([csv],{type:'text/csv'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='export_'+type+'.csv'; a.click(); URL.revokeObjectURL(url);
+    }
+    function downloadInforme(key){ // simple simulated report
+      const txt = 'Informe: '+key+'\nFecha: '+new Date().toLocaleString(); const blob=new Blob([txt],{type:'text/plain'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='informe_'+key+'.txt'; a.click(); URL.revokeObjectURL(url);
+    }
+
+    /***********************
+     * Analítica demo
+     ***********************/
+    function runRiskAnalysis(){ // simple heuristic: clientes con más de 1 poliza small chance, random factor
+      const results = state.clientes.map(c=>{ const polCount = state.polizas.filter(p=>p.clienteId==c.id).length; const score = Math.min(100, Math.round((Math.random()*40) + (polCount*10) + (Math.random()*10)) ); return {...c, score}; });
+      const risky = results.filter(r=>r.score>60);
+      document.getElementById('analysis-result').innerHTML = `Analizados: ${results.length} — Riesgo alto: ${risky.length} clientes (${risky.map(r=>r.nombre).join(', ')||'—'})`;
+      // update pred chart data
+      try{
+        if(chartPred){ chartPred.data.datasets[0].data = results.map(r=> Math.round(r.score/10)); chartPred.update(); }
+      }catch(e){ console.warn('No se pudo actualizar chartPred (todavía no inicializado)'); }
+    }
+
+    function toggleAI(){ document.getElementById('assistant').classList.toggle('hidden'); }
+
+    function seedDemo(){ if(confirm('Resetear demo y cargar datos de ejemplo?')){ state = structuredClone(defaultState); saveState(state); render(); } }
+
+    function formatDateIso(s){ if(!s) return ''; return s; }
+
+    // utilities
+    function asegList(){ return Array.from(new Set(state.polizas.map(p=>p.aseg))).join(', '); }
+
+    // initial render
+    render();
+
+    // quick test cases (console) to verify charts initialize correctly
+    function _test_charts(){ console.log('TEST: chart variables before render —', {chartSales,chartPie,chartPred}); try{ renderCharts(); console.log('TEST: chart variables after render —', {chartSales: !!chartSales, chartPie: !!chartPie, chartPred: !!chartPred}); }catch(e){ console.error('TEST failed: ', e); } }
+    // run lightweight test (non-blocking)
+    setTimeout(_test_charts, 300);
+
+    // small helpers that needed to be global for inline onclicks
+    window.openModal = openModal; window.closeModal = closeModal; window.saveModal = saveModal; window.editCliente = editCliente; window.removeCliente = removeCliente; window.editPoliza = editPoliza; window.seedDemo = seedDemo; window.toggleAI = toggleAI; window.generateCSV = generarCSV; window.generarCSV = generarCSV; window.downloadInforme = downloadInforme; window.runRiskAnalysis = runRiskAnalysis;
+
+  </script>
+</body>
+</html>
